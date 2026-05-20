@@ -26,6 +26,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.navigation.NavHostController
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 val urlBase = "https://json-placeholder.mock.beeceptor.com/"
 val retrofit = Retrofit.Builder().baseUrl(urlBase)
@@ -96,5 +103,30 @@ fun BarraInferior(navController: NavHostController) {
             selected = navController.currentDestination?.route == "posts",
             onClick = { navController.navigate("posts") }
         )
+    }
+}
+@Composable
+fun Contenido(
+    pv: PaddingValues,
+    navController: NavHostController,
+    servicio: PostApiService
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(pv)
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = "inicio"
+        ) {
+            composable("inicio") { ScreenInicio() }
+            composable("posts") { ScreenPosts(navController, servicio) }
+            composable("postsVer/{id}", arguments = listOf(
+                navArgument("id") { type = NavType.IntType }
+            )) {
+                ScreenPost(navController, servicio, it.arguments!!.getInt("id"))
+            }
+        }
     }
 }
